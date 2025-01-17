@@ -1,11 +1,33 @@
 import requests
 import json
 import base64
+import sys
+import os
 
-contacts=[]
+# use path of file in config.json or in parameter
+transcript_file_path=""
 with open('config.json') as f:
     credentials = json.load(f)
     basic_credentials = f"{credentials['username']}:{credentials['password']}"
+
+# Check argument
+if len(sys.argv) > 1:
+    if os.path.exists(sys.argv[1]):
+        transcript_file_path=sys.argv[1]
+        print(f"Using {transcript_file_path} as transcript for the chat")
+    else:
+        print(f" {transcript_file_path} File does not exist.")
+        exit()
+else:
+    transcript_file_path=credentials['transcript_file']
+    if transcript_file_path:
+        print("Using transcript_file from config.json : {transcript_file_path}")
+    else:
+        print(f" {transcript_file_path} File from config.json does not exist.")
+        exit()
+
+contacts=[]
+
 
 auth_header=f"Basic {base64.b64encode(basic_credentials.encode()).decode()}"
 # S2S Authentication
@@ -34,6 +56,7 @@ def get_user_id(email, contacts):
 
         user1_response = requests.request("GET", url_user1, headers=headers, data=payload)
         ## store in contact dict
+        ## test that user exsist
         user1={"email":email, "user_id":user1_response.json()['id']}
         contacts.append(user1)
     return user1
@@ -53,15 +76,13 @@ def get_user_id(email, contacts):
 #         "text": ""
 #     }
 #   ]
-with open('chatdata/chat_data_helpdesk.json') as f:
+with open(transcript_file_path) as f:
     chat_data = json.load(f)
-
 
 
 inc=0
 mainMessage=0
 for message in chat_data:
-    print(f"contact:{contacts}")
     sender=get_user_id(message['sender_email'],contacts)
     recipient=get_user_id(message['recipient_email'],contacts)
     url = f"https://api.zoom.us/v2/chat/users/{sender['user_id']}/messages"
@@ -87,7 +108,8 @@ for message in chat_data:
     if response.status_code==201:
         print(f"Message {inc}/{len(chat_data)}")
     else:
-        print(f"error: {response.text}")
+        print(f"Message {inc}/{len(chat_data)}: error: {response.status_code} / {response.text}")
+        # we may want to wait a bit and try again if the main message is not available yet
     inc+=1
 
 

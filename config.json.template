@@ -1,5 +1,6 @@
 {
     "account_id": "",
     "username": "",
-    "password": ""
+    "password": "",
+    "transcript_file":"chatdata/chat_data.json"
 }
