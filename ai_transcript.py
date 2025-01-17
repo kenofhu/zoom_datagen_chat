@@ -1,3 +1,15 @@
+###
+# alternatively use the following prompt in aic and copy paste in chatdata/chat_data.json
+# Generate a chat transcript between two users.  
+""" 
+The output should be a strict json format, each message will contain the following fields 'timestamp' (in this format 2023-10-01T10:07:45Z
+), 'sender_email','recipient_email','text'. 
+Both emails should always be different. 
+This output will be used by another software to be injected in a chat software. You should only output json data. 
+Please generate a transcript between {USER1} ({EMAIL_USER1}) and {USER2} ({EMAIL_USER2}). {name1} is the end user, and {name2} the helpdesk specialist. 
+They are having a chat discussion to resolve a technical issue when configuring a Zoom webinar, to use an external sso for authentication, please imagine a chat discussion between these two person.
+"""
+
 from openai import OpenAI
 import json
 import argparse
@@ -5,8 +17,6 @@ import os
 from pathlib import Path
 
 client = OpenAI()
-
-
 
 
 # use path of file in config.json or in parameter
@@ -28,13 +38,11 @@ name2 = args.name2 if args.name2 else "Julien"
 prompt=f"Please generate a transcript between {name1} ({mail1}) and {name2} ({mail2}). {name1} is the end user, and {name2} the helpdesk specialist. They are having a chat discussion to resolve a technical issue when configuring a Zoom webinar, to use an external sso for authentication, please imagine a chat discussion between these two person."
 
 print(f"This is the default prompt:\n {prompt}")
-response=input("if you want to use it, press y or yes, otherwise write your new prompt\n")
+response=input("if you want to use it, press y or yes, otherwise write youry new prompt\n")
 if response.lower() in ["y", "yes"]:
   print("Generating the transcript")
 else:
     prompt=response
-
-
 
 
 # ask for name and email of user 1
