@@ -21,7 +21,7 @@ if len(sys.argv) > 1:
 else:
     transcript_file_path=credentials['transcript_file']
     if transcript_file_path:
-        print("Using transcript_file from config.json : {transcript_file_path}")
+        print(f"Using transcript_file from config.json : {transcript_file_path}")
     else:
         print(f" {transcript_file_path} File from config.json does not exist.")
         exit()
